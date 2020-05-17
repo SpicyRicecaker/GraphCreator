@@ -1,0 +1,6 @@
+#+TITLE: Graph Creator Notes
+#+DESCRIPTION: 2:00 long PSU video what a scam
+
+* Graph
+** Adjacency Table
+* Dijkstra's Algorithm
