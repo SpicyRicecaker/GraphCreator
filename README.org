@@ -1,6 +1,58 @@
 #+TITLE: Graph Creator Notes
 #+DESCRIPTION: 2:00 long PSU video what a scam
 
-* Graph
-** Adjacency Table
+* Graph Implementation
+** Required Methods (See Class)
+*** Add Edge
+*** Remove Edge
+*** Add Node
+*** Remove Node
+** Required Classes
+*** Edge(Node* src, Node* dest, int weight)
+- Start Node
+- End Node
+- Value
+**** Add Node(Edge* src)
+- I think this func needs to be in main
+- new Edge(src, NULL, NULL)
+**** Add Edge(Edge* from, Edge* to)
+- traverse linked list edge a
+  - if edge->getDest() == to
+    - break
+  - if edge get next == null
+    - add edge
+**** Remove Edge(Edge* from, Edge* to)
+- traverse linked list edge src
+  - if edge->getDest() == to
+    - remove
+  - if edge get next == null
+    - return edge DNE
+**** Remove Node(Edge* src)
+- traverse linked list src, store
+- delete Edge in linked list src head
+- remove src from arrayEdge
+- traverse all stored edges
+  - remove Edge* src
+*** Main
+- Should Include an Array of Nodes
+- Need some way to traverse the entire array of nodes and print adjacency list
 * Dijkstra's Algorithm
+** Breadth-First Search
+- Uses a queue
+- Scans all the neighbors, paths closest
+- Vertex based technique
+- Basically as the name sounds like, search close to source
+*** List of Visited Nodes
+- So you don't cycle
+** Depth-First Search
+- Uses a stack
+- Scans based on edges, visited vertices are pushed onto stack, then if no vertices are popped
+- As the name sounds like, searching away from source
+
+* Graph Info
+** Directed Graph
+- A->B, not B->A
+** Weighted Edges
+- Edges hold a numerical value
+** Adjacency "List"
+- Array of Vertices
