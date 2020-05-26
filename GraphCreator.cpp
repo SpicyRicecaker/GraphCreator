@@ -17,7 +17,7 @@ int getAction();
 //Asks user to input label, adds it as a vertex to the garph
 void addVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels and a weight, adds it as the weight between nodes
-void addEdge();
+void addEdge(vector<Node*> &nodeList, char* in);
 //Asks user to input label, remove it from the graph
 void removeVertex();
 //Asks user to input two labels, removes edge
@@ -51,7 +51,7 @@ int main(){
         }
         //addEdge()
         else if(strcmp(in, "ADDEDGE") == 0){
-
+            addEdge(nodeList, in);
         }
         //addEdge()
         else if(strcmp(in, "REMOVEVERTEX") == 0){
@@ -124,7 +124,6 @@ void graph(vector<Node*>& nodeList){
     for(it = nodeList.begin(); it != nodeList.end(); it++){
         //Iterate through linked list
         //We have curr and past here just to make the syntax look a bit better (i.e. ", and x")
-        bool neighbors;
         Node* curr = (*it)->getNext();
         if(curr == NULL){
             cout << "For node \"" << (*it)->getLabel() << "\", there are no adjacent nodes." << endl;
@@ -138,4 +137,60 @@ void graph(vector<Node*>& nodeList){
             cout << endl;
         }
     }
+}
+
+//Asks user for two labels, and a weight, verifies that the weight is a number, verifies that the first node DOES exist, then traverses the linked list for the first node, verifies that the second node DNE, then adds that, including a weight
+void addEdge(vector<Node*> &nodeList, char* in){
+    char firstNodeLabel[999];
+    char secondNodeLabel[999];
+    int weight = 0;
+    //Asks user for two labels
+    cout << "Please enter the label for the first node." << endl;
+    getInput(in);
+    strcpy(firstNodeLabel, in);
+    cout << "Please enter the label for the second node." << endl;
+    getInput(in);
+    strcpy(secondNodeLabel, in);
+    cout << "Please enter the weight of this edge." << endl;
+    while(true){
+        getInput(in);
+        int inLen = strlen(in);
+        for(int a = 0; a < inLen; ++a){
+            if(!isdigit(in[a])){
+                cout << "Please only enter numbers for the weight of the edge." << endl;
+                continue;
+            }
+        }
+        break;
+    }
+    weight = atoi(in);
+    //Loop through the initial node list and makes sure that the first node does exist
+    vector<Node*>::iterator it;
+    for(it = nodeList.begin(); it != nodeList.end(); ++it){
+        //If the first node was found
+        if(strcmp((*it)->getLabel(),firstNodeLabel) == 0){
+            //Traverse the list and make sure that the first node DNE
+            Node* curr = (*it);
+            while(true){
+                cout << "Current label is " << curr->getLabel() << endl;
+                cout << "Second label to add is " << secondNodeLabel << endl;
+                //If the second node exists
+                if(strcmp(curr->getLabel(), secondNodeLabel)==0){
+                    //Tell the user that the edge already exists and exit!
+                    cout << "The edge between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\" already exists! Therefore, an edge was not added." << endl;
+                    return;
+                }
+                if(curr->getNext()!=NULL){
+                    curr = curr->getNext();
+                }else{
+                    break;
+                }
+            }
+            //If everything is valid, we can finally add the edge!
+            curr->setNext(new Node(NULL, secondNodeLabel, weight));
+            cout << "An edge with weight \"" << weight << "\" was successfully added between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"!" << endl;
+            return;
+        }
+    }
+    cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
 }
