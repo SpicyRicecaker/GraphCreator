@@ -10,8 +10,8 @@ class Node{
                 //Getters and Setters for values
                 Node* getNext();
                 void setNext(Node* newNext);
-                char* getValue();
-                void setValue(char newValue);
+                char* getLabel();
+                void setLabel(char* newLabel);
                 int getWeight();
                 void setWeight(int newWeight);
 

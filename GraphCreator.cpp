@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <iterator>
 #include "Node.h"
 
 using namespace std;
@@ -14,14 +15,17 @@ void quit(bool &running);
 //Takes in user input and returns an int
 int getAction();
 //Asks user to input label, adds it as a vertex to the garph
-void addVertex(char* in);
+void addVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels and a weight, adds it as the weight between nodes
 void addEdge();
 //Asks user to input label, remove it from the graph
 void removeVertex();
 //Asks user to input two labels, removes edge
-void removeEdge(); //Uses Dijkstra's Algorithm to find a path between the first vertex and the last vertex. Return shortest path if it exists, or no paths
+void removeEdge();
+//Uses Dijkstra's Algorithm to find a path between the first vertex and the last vertex. Return shortest path if it exists, or no paths
 void findShortestPath();
+//Prints out the adjacency list
+void graph(vector<Node*> &nodeList);
 
 int main(){
     //Holds input
@@ -43,20 +47,38 @@ int main(){
         }
         //addVertex()
         if(strcmp(in, "ADDVERTEX") == 0){
+            addVertex(nodeList, in);
+        }
+        //addEdge()
+        else if(strcmp(in, "ADDEDGE") == 0){
 
-        }else if(strcmp(in, "ADDEDGE") == 0){
+        }
+        //addEdge()
+        else if(strcmp(in, "REMOVEVERTEX") == 0){
 
-        }else if(strcmp(in, "REMOVEVERTEX") == 0){
+        }
+        //removeEdge()
+        else if(strcmp(in, "REMOVEEDGE") == 0){
 
-        }else if(strcmp(in, "REMOVEEDGE") == 0){
+        }
+        //findShortestPath()
+        else if(strcmp(in, "FINDSHORTESTPATH") == 0){
 
-        }else if(strcmp(in, "FINDSHORTESTPATH") == 0){
-
-        }else if(strcmp(in, "HELP") == 0){
+        }
+        //graph()
+        else if(strcmp(in, "GRAPH") == 0){
+            graph(nodeList);
+        }
+        //help()
+        else if(strcmp(in, "HELP") == 0){
             help();
-        }else if(strcmp(in, "QUIT") == 0){
+        }
+        //quit()
+        else if(strcmp(in, "QUIT") == 0){
             quit(running);
-        }else{
+        }
+        //reprompt
+        else{
             cout << "The command \"" << in << "\" was not recognized. Please type a new command, or enter \"help\" for a list of commands!" << endl;
         }
     }
@@ -75,10 +97,45 @@ void getInput(char* in){
 
 //Prints list of valid commands.
 void help(){
-    cout << "\n----------\n\"addvertex\" to add a vertex to the tree,\n\"addedge\" to add an edge to the tree,\n\"removevertex\" to remove an edge,\n\"findshortestpath\" to find shortest path from one node to the other,\n\"quit\" to exit this program\n\"help\" to reprint this list.\n----------\n" << endl;
+    cout << "\n----------\n\"addvertex\" to add a vertex to the tree,\n\"addedge\" to add an edge to the tree,\n\"removevertex\" to remove an edge,\n\"findshortestpath\" to find shortest path from one node to the other,\n\"graph\" to print the adjacency list for this graph,\n\"quit\" to exit this program\n\"help\" to reprint this list.\n----------\n" << endl;
 }
 
 //Stops program execution by setting running to false
 void quit(bool &running){
     running = false;
+}
+
+//Pushes back a new node into the list of vertices
+void addVertex(vector<Node*> &nodeList, char* in){
+    cout << "Please enter the label for this new vertex" << endl;
+    getInput(in);
+    nodeList.push_back(new Node(NULL, in, -1));
+    cout << "\"" << in << "\" was successfully entered into the graph!" << endl;
+}
+
+//Prints out the adjacency list by iterating through the vector of nodes and traversing the linked list for each
+void graph(vector<Node*>& nodeList){
+    //Create iterator
+    vector<Node*>::iterator it;
+    //Iterate through vertices
+    if(it == nodeList.end()){
+        cout << "The graph is empty!" << endl;
+    }
+    for(it = nodeList.begin(); it != nodeList.end(); it++){
+        //Iterate through linked list
+        //We have curr and past here just to make the syntax look a bit better (i.e. ", and x")
+        bool neighbors;
+        Node* curr = (*it)->getNext();
+        if(curr == NULL){
+            cout << "For node \"" << (*it)->getLabel() << "\", there are no adjacent nodes." << endl;
+        }else{
+            //Print vertex
+            cout << "For node \"" << (*it)->getLabel() << "\", the adjacent nodes are: ";
+            while(curr!=NULL){
+                cout << curr->getLabel() << " ";
+                curr = curr->getNext();
+            }
+            cout << endl;
+        }
+    }
 }

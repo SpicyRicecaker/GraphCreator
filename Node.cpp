@@ -21,6 +21,19 @@ void Node::setNext(Node* newNext){
     next = newNext;
 
 }
+
+char* Node::getLabel(){
+    return label;
+}
+void Node::setLabel(char* newLabel){
+    //Deallocate contents of current label
+    delete[] label;
+    //Reallocate space for new label
+    label = new char[strlen(newLabel)];
+    //Copy values over
+    strcpy(label, newLabel);
+}
+
 int Node::getWeight(){
     return weight;
 }
