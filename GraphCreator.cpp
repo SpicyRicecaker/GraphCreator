@@ -6,6 +6,11 @@
 
 using namespace std;
 
+struct pathAndLength{
+    vector<Node*> pathList;
+    int pathCost;
+};
+
 //Gets user input
 void getInput(char* in);
 //Prints list of commands
@@ -23,7 +28,7 @@ void removeVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels, removes edge
 void removeEdge(vector<Node*> &nodeList, char* in);
 //Uses Dijkstra's Algorithm to find a path between the first vertex and the last vertex. Return shortest path if it exists, or no paths
-void findShortestPath();
+pathAndLength findShortestPath(vector<Node*> &nodeList, char* in);
 //Prints out the adjacency list
 void graph(vector<Node*> &nodeList);
 //Delete LinkedList - This really should be in the node class but I'm too lazy to move it over
@@ -32,7 +37,6 @@ void removeList(Node* &head);
 void removeNode(char* in, Node* &head);
 //Node Length - traverses list to get length
 int nodeLength(Node* head);
-
 
 int main(){
     //Holds input
@@ -320,4 +324,18 @@ void removeEdge(vector<Node*> &nodeList, char* in){
         }
     }
     cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not deleted." << endl;
+}
+
+//Uses dijkstra's to find shortest path
+pathAndLength findShortestPath(vector<Node*> &nodeList, char* in){
+    char firstNodeLabel[999];
+    char secondNodeLabel[999];
+    //Asks user for two labels
+    cout << "Please enter the label for the source node." << endl;
+    getInput(in);
+    strcpy(firstNodeLabel, in);
+    cout << "Please enter the label for the destination node." << endl;
+    getInput(in);
+    strcpy(secondNodeLabel, in);
+    //
 }
