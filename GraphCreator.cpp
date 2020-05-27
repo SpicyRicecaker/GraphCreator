@@ -19,13 +19,20 @@ void addVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels and a weight, adds it as the weight between nodes
 void addEdge(vector<Node*> &nodeList, char* in);
 //Asks user to input label, remove it from the graph
-void removeVertex();
+void removeVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels, removes edge
 void removeEdge();
 //Uses Dijkstra's Algorithm to find a path between the first vertex and the last vertex. Return shortest path if it exists, or no paths
 void findShortestPath();
 //Prints out the adjacency list
 void graph(vector<Node*> &nodeList);
+//Delete LinkedList - This really should be in the node class but I'm too lazy to move it over
+void removeList(Node* &head);
+//Delete Node - Again, this really should in the node class but I'm too lazy to move it over
+void removeNode(char* in, Node* &head);
+//Node Length - traverses list to get length
+int nodeLength(Node* head);
+
 
 int main(){
     //Holds input
@@ -55,7 +62,7 @@ int main(){
         }
         //addEdge()
         else if(strcmp(in, "REMOVEVERTEX") == 0){
-
+            removeVertex(nodeList, in);
         }
         //removeEdge()
         else if(strcmp(in, "REMOVEEDGE") == 0){
@@ -193,4 +200,88 @@ void addEdge(vector<Node*> &nodeList, char* in){
         }
     }
     cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
+}
+
+//Really inefficient when using adjacency lists. Loops through the entire list of vertices, deletes matching, then traverse the adjacent vertices and also deletes matching from there.
+void removeVertex(vector<Node*> &nodeList, char* in){
+    //First ask user for vertex to be deleted.
+    cout << "Please enter a label for the vertex to be deleted." << endl;
+    getInput(in);
+    //Keep a record of the number of vertices deleted
+    int deletedNodes = 0;
+    //Keep a record for the number of connections deleted
+    int deletedConnections = 0;
+    //Iterate throught the list of vertices
+    vector<Node*>::iterator it;
+    for(it = nodeList.begin(); it!=nodeList.end(); ){
+        cout << "Now iterating..." << endl;
+        //If the vertex was found
+        if(strcmp((*it)->getLabel(), in) == 0){
+            //Iterate and delete the whole linked list, then delete the head from the vertex
+            //I hope that there aren't any issues with this because of references!
+            removeList((*it));
+            it = nodeList.erase(it);
+            deletedNodes++;
+        }else{
+            int befLength = nodeLength((*it));
+            //Otherwise, traverse the linked list and scan for equivalent connections, remove them
+            removeNode(in, (*it));
+            deletedConnections += (befLength - nodeLength((*it)));
+            ++it;
+        }
+    }
+    if(deletedNodes == 0){
+        cout << "The vertex with the given label \"" << in << "\" was not found, so there were no changes to the graph." << endl;
+    }else{
+        cout << "The vertex \"" << in << "\" was deleted along with " << deletedConnections << " connections!" << endl;
+    }
+}
+
+//Deletes the entire linked list through the head
+void removeList(Node* &head){
+    while(head!=NULL){
+        //Store the child of head
+        Node* tempChild = head->getNext();
+        //Cut off child
+        head->setNext(NULL);
+        //Deallocate head values
+        delete head;
+        //Reset head to child
+        head = tempChild;
+    }
+}
+
+//Deletes a node at a certain point in a linked list. It's so scuffed that I don't want to debug this ffs
+void removeNode(char* in, Node* &head){
+    Node** past = &head;
+    Node** current = &head;
+    //while we haven't reached the end of the list with current
+    while((*current)!=NULL){
+        //Check if we have a match with current
+        if(strcmp((*current)->getLabel(), in) == 0){
+            //If so, remember current's child
+            Node* tempChild = (*current)->getNext();
+            //Set current's child to null
+            (*current)->setNext(NULL);
+            //Remove current
+            delete (*current);
+            //Set past to current's child
+            (*past)->setNext(tempChild);
+            //Set current to its child
+            (*current) = tempChild;
+        }else{
+            //RIP
+            (*past) = (*current);
+            (*current) = (*current)->getNext();
+        }
+    }
+}
+
+int nodeLength(Node* head){
+    int length = 0;
+    while(head!=NULL){
+        ++length;
+        head=head->getNext();
+    }
+    return length;
 }
