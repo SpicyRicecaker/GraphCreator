@@ -214,7 +214,6 @@ void removeVertex(vector<Node*> &nodeList, char* in){
     //Iterate throught the list of vertices
     vector<Node*>::iterator it;
     for(it = nodeList.begin(); it!=nodeList.end(); ){
-        cout << "Now iterating..." << endl;
         //If the vertex was found
         if(strcmp((*it)->getLabel(), in) == 0){
             //Iterate and delete the whole linked list, then delete the head from the vertex
@@ -251,7 +250,7 @@ void removeList(Node* &head){
     }
 }
 
-//Deletes a node at a certain point in a linked list. It's so scuffed that I don't want to debug this ffs
+//Deletes a node at a certain point in a linked list. It doesn't even consider the root case so it's technically bugged but whatever lol
 void removeNode(char* in, Node* &head){
     Node** past = &head;
     Node** current = &head;
@@ -265,14 +264,15 @@ void removeNode(char* in, Node* &head){
             (*current)->setNext(NULL);
             //Remove current
             delete (*current);
-            //Set past to current's child
+            //Set past child to current's child
             (*past)->setNext(tempChild);
             //Set current to its child
-            (*current) = tempChild;
+            //current = &tempChild;
         }else{
             //RIP
-            (*past) = (*current);
-            (*current) = (*current)->getNext();
+            past = current;
+            Node* temp = (*current)->getNext();
+            current = &temp;
         }
     }
 }
