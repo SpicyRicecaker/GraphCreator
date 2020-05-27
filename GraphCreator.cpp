@@ -21,7 +21,7 @@ void addEdge(vector<Node*> &nodeList, char* in);
 //Asks user to input label, remove it from the graph
 void removeVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels, removes edge
-void removeEdge();
+void removeEdge(vector<Node*> &nodeList, char* in);
 //Uses Dijkstra's Algorithm to find a path between the first vertex and the last vertex. Return shortest path if it exists, or no paths
 void findShortestPath();
 //Prints out the adjacency list
@@ -66,7 +66,7 @@ int main(){
         }
         //removeEdge()
         else if(strcmp(in, "REMOVEEDGE") == 0){
-
+            removeEdge(nodeList, in);
         }
         //findShortestPath()
         else if(strcmp(in, "FINDSHORTESTPATH") == 0){
@@ -162,13 +162,17 @@ void addEdge(vector<Node*> &nodeList, char* in){
     while(true){
         getInput(in);
         int inLen = strlen(in);
+        bool alldig = true;
         for(int a = 0; a < inLen; ++a){
             if(!isdigit(in[a])){
-                cout << "Please only enter numbers for the weight of the edge." << endl;
-                continue;
+                alldig = false;
+                break;
             }
         }
-        break;
+        if(alldig){
+            break;
+        }
+        cout << "Please only enter numbers for the weight of the edge." << endl;
     }
     weight = atoi(in);
     //Loop through the initial node list and makes sure that the first node does exist
@@ -277,6 +281,7 @@ void removeNode(char* in, Node* &head){
     }
 }
 
+//Traverses the linked list while incrementing counter to find length
 int nodeLength(Node* head){
     int length = 0;
     while(head!=NULL){
@@ -284,4 +289,35 @@ int nodeLength(Node* head){
         head=head->getNext();
     }
     return length;
+}
+
+//Basically a more simple removevertex, kind of like addedge. Verifies that source node exists, traverses linked list and outputs the number of connections deleted
+void removeEdge(vector<Node*> &nodeList, char* in){
+    char firstNodeLabel[999];
+    char secondNodeLabel[999];
+    //Asks user for two labels
+    cout << "Please enter the label for the first node." << endl;
+    getInput(in);
+    strcpy(firstNodeLabel, in);
+    cout << "Please enter the label for the second node." << endl;
+    getInput(in);
+    strcpy(secondNodeLabel, in);
+    vector<Node*>::iterator it;
+    for(it = nodeList.begin(); it!=nodeList.end(); ++it){
+        //If the vertex was found
+        if(strcmp((*it)->getLabel(), firstNodeLabel) == 0){
+            int befLength = nodeLength((*it));
+            //Traverse the linked list and scan for equivalent connections, remove them
+            removeNode(secondNodeLabel, (*it));
+            if(befLength == nodeLength((*it))){
+                //If there weren't any deleted edges, notify
+                cout << "The edge between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"doesn't exist! Therefore, an edge was not deleted." << endl;
+            }else{
+               //If there were deleted edges, notify
+            cout << "An edge was successfully deleted between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"!" << endl;
+            }
+            return;
+        }
+    }
+    cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not deleted." << endl;
 }
