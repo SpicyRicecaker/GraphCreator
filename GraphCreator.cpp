@@ -23,6 +23,8 @@ int getAction();
 void addVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels and a weight, adds it as the weight between nodes
 void addEdge(vector<Node*> &nodeList, char* in);
+//Add edge except with no user inputs. Used this for debug
+void addEdgeLite(vector<Node*> &nodeList, char* src, char* dest, int weight);
 //Asks user to input label, remove it from the graph
 void removeVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels, removes edge
@@ -49,6 +51,26 @@ int main(){
     bool running = true;
 
     cout << "Welcome to Graph Creator. Enter \"help\" for a list of commands." << endl;
+
+
+    //DEBUG DEBUG DEBUG
+
+    nodeList.push_back(new Node(NULL, (char*)"A", -1));
+    nodeList.push_back(new Node(NULL, (char*)"B", -1));
+    nodeList.push_back(new Node(NULL, (char*)"C", -1));
+    nodeList.push_back(new Node(NULL, (char*)"D", -1));
+    nodeList.push_back(new Node(NULL, (char*)"E", -1));
+    nodeList.push_back(new Node(NULL, (char*)"F", -1));
+    nodeList.push_back(new Node(NULL, (char*)"G", -1));
+
+    addEdgeLite(nodeList, (char*)"A", (char*)"C", 5);
+    addEdgeLite(nodeList, (char*)"A", (char*)"B", 10);
+    addEdgeLite(nodeList, (char*)"C", (char*)"D", 50);
+    addEdgeLite(nodeList, (char*)"B", (char*)"D", 25);
+    addEdgeLite(nodeList, (char*)"D", (char*)"E", 100);
+    addEdgeLite(nodeList, (char*)"E", (char*)"F", 10);
+    addEdgeLite(nodeList, (char*)"E", (char*)"G", 200);
+    //DEBUG DEBUG DEBUG
     while(running){
         //Get user input then chooses the appropriate function to call
         getInput(in);
@@ -187,8 +209,6 @@ void addEdge(vector<Node*> &nodeList, char* in){
             //Traverse the list and make sure that the first node DNE
             Node* curr = (*it);
             while(true){
-                cout << "Current label is " << curr->getLabel() << endl;
-                cout << "Second label to add is " << secondNodeLabel << endl;
                 //If the second node exists
                 if(strcmp(curr->getLabel(), secondNodeLabel)==0){
                     //Tell the user that the edge already exists and exit!
@@ -337,5 +357,37 @@ pathAndLength findShortestPath(vector<Node*> &nodeList, char* in){
     cout << "Please enter the label for the destination node." << endl;
     getInput(in);
     strcpy(secondNodeLabel, in);
-    //
+    pathAndLength b;
+    return b;
+}
+
+//Asks user for two labels, and a weight, verifies that the weight is a number, verifies that the first node DOES exist, then traverses the linked list for the first node, verifies that the second node DNE, then adds that, including a weight
+void addEdgeLite(vector<Node*> &nodeList, char* firstNodeLabel, char* secondNodeLabel, int weight){
+    //Loop through the initial node list and makes sure that the first node does exist
+    vector<Node*>::iterator it;
+    for(it = nodeList.begin(); it != nodeList.end(); ++it){
+        //If the first node was found
+        if(strcmp((*it)->getLabel(),firstNodeLabel) == 0){
+            //Traverse the list and make sure that the first node DNE
+            Node* curr = (*it);
+            while(true){
+                //If the second node exists
+                if(strcmp(curr->getLabel(), secondNodeLabel)==0){
+                    //Tell the user that the edge already exists and exit!
+                    cout << "The edge between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\" already exists! Therefore, an edge was not added." << endl;
+                    return;
+                }
+                if(curr->getNext()!=NULL){
+                    curr = curr->getNext();
+                }else{
+                    break;
+                }
+            }
+            //If everything is valid, we can finally add the edge!
+            curr->setNext(new Node(NULL, secondNodeLabel, weight));
+            cout << "An edge with weight \"" << weight << "\" was successfully added between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"!" << endl;
+            return;
+        }
+    }
+    cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
 }
