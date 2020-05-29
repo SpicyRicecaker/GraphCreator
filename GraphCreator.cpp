@@ -402,20 +402,25 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
         return;
     }
     dijkstraAlgorithm(nodeList, parent, distance, firstNodeLabel);
-    cout << "Hi" << endl;
     cout << distance[secondNodeLabel] << endl;
     //Case that there is no path
     if(distance[secondNodeLabel] != INFINITY){
+        cout << "No infinity" << endl;
         //Print shortest path
         cout << "The shortest path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\" is ";
         char* current = secondNodeLabel;
+        vector<char*> path;
         //Go backwards to trace path
         while(true){
-            cout << current << " ";
-            if(strcmp(secondNodeLabel, firstNodeLabel) == 0){
-                return;
+            path.push_back(current);
+            if(strcmp(current, firstNodeLabel) == 0){
+                break;
             }
             current = parent[current];
+        }
+        vector<char*>::reverse_iterator pathIt;
+        for(pathIt = path.rbegin(); pathIt != path.rend(); ++pathIt){
+            cout << (*pathIt) << " ";
         }
         cout << "with a weight of " << distance[secondNodeLabel] << "!" << endl;
     }else{
