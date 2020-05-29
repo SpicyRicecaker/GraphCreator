@@ -62,23 +62,21 @@ int main(){
 
     //DEBUG DEBUG DEBUG
 
-    /*
-    nodeList.push_back(new Node(NULL, (char*)"A", -1));
-    nodeList.push_back(new Node(NULL, (char*)"B", -1));
-    nodeList.push_back(new Node(NULL, (char*)"C", -1));
-    nodeList.push_back(new Node(NULL, (char*)"D", -1));
-    nodeList.push_back(new Node(NULL, (char*)"E", -1));
-    nodeList.push_back(new Node(NULL, (char*)"F", -1));
-    nodeList.push_back(new Node(NULL, (char*)"G", -1));
+      nodeList.push_back(new Node(NULL, (char*)"A", -1));
+      nodeList.push_back(new Node(NULL, (char*)"B", -1));
+      nodeList.push_back(new Node(NULL, (char*)"C", -1));
+      nodeList.push_back(new Node(NULL, (char*)"D", -1));
+      nodeList.push_back(new Node(NULL, (char*)"E", -1));
+      nodeList.push_back(new Node(NULL, (char*)"F", -1));
+      nodeList.push_back(new Node(NULL, (char*)"G", -1));
 
-    addEdgeLite(nodeList, (char*)"A", (char*)"C", 5);
-    addEdgeLite(nodeList, (char*)"A", (char*)"B", 10);
-    addEdgeLite(nodeList, (char*)"C", (char*)"D", 50);
-    addEdgeLite(nodeList, (char*)"B", (char*)"D", 25);
-    addEdgeLite(nodeList, (char*)"D", (char*)"E", 100);
-    addEdgeLite(nodeList, (char*)"E", (char*)"F", 10);
-    addEdgeLite(nodeList, (char*)"E", (char*)"G", 200);
-    */
+      addEdgeLite(nodeList, (char*)"A", (char*)"C", 5);
+      addEdgeLite(nodeList, (char*)"A", (char*)"B", 10);
+      addEdgeLite(nodeList, (char*)"C", (char*)"D", 50);
+      addEdgeLite(nodeList, (char*)"B", (char*)"D", 25);
+      addEdgeLite(nodeList, (char*)"D", (char*)"E", 100);
+      addEdgeLite(nodeList, (char*)"E", (char*)"F", 10);
+      addEdgeLite(nodeList, (char*)"E", (char*)"G", 200);
     //DEBUG DEBUG DEBUG
     while(running){
         //Get user input then chooses the appropriate function to call
@@ -212,31 +210,47 @@ void addEdge(vector<Node*> &nodeList, char* in){
     weight = atoi(in);
     //Loop through the initial node list and makes sure that the first node does exist
     vector<Node*>::iterator it;
+    vector<Node*>::iterator firstNodeSpot;
+    bool firstFound = false;
+    bool secondFound = false;
     for(it = nodeList.begin(); it != nodeList.end(); ++it){
         //If the first node was found
         if(strcmp((*it)->getLabel(),firstNodeLabel) == 0){
-            //Traverse the list and make sure that the first node DNE
-            Node* curr = (*it);
-            while(true){
-                //If the second node exists
-                if(strcmp(curr->getLabel(), secondNodeLabel)==0){
-                    //Tell the user that the edge already exists and exit!
-                    cout << "The edge between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\" already exists! Therefore, an edge was not added." << endl;
-                    return;
-                }
-                if(curr->getNext()!=NULL){
-                    curr = curr->getNext();
-                }else{
-                    break;
-                }
-            }
-            //If everything is valid, we can finally add the edge!
-            curr->setNext(new Node(NULL, secondNodeLabel, weight));
-            cout << "An edge with weight \"" << weight << "\" was successfully added between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"!" << endl;
-            return;
+            firstFound = true;
+            firstNodeSpot = it;
+        }else if(strcmp((*it)->getLabel(),secondNodeLabel) == 0){
+            secondFound = true;
         }
     }
-    cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
+    if(firstFound == false){
+        if(secondFound == false){
+            cout << "The node first and second \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\" were not found...therefore an edge was not added." << endl;
+            return;
+        }
+        cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
+    }else if(secondFound == false){
+        cout << "The second node \"" << secondNodeLabel << "\" was not found... therefore and edge was not added." << endl;
+    }else{
+        //Traverse the list and make sure that the second node DNE
+        Node* curr = (*firstNodeSpot);
+        while(true){
+            //If the second node exists
+            if(strcmp(curr->getLabel(), secondNodeLabel) == 0){
+                //Tell the user that the edge already exists and exit!
+                cout << "The edge between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\" already exists! Therefore, an edge was not added." << endl;
+                return;
+            }
+            if(curr->getNext()!=NULL){
+                curr = curr->getNext();
+            }else{
+                break;
+            }
+        }
+        //If everything is valid, make sure that the second node exists, then add. (Really efficient I know)
+        curr->setNext(new Node(NULL, secondNodeLabel, weight));
+        cout << "An edge with weight \"" << weight << "\" was successfully added between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"!" << endl;
+        return;
+    }
 }
 
 //Really inefficient when using adjacency lists. Loops through the entire list of vertices, deletes matching, then traverse the adjacent vertices and also deletes matching from there.
