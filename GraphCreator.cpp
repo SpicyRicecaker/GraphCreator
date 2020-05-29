@@ -356,7 +356,6 @@ void removeEdge(vector<Node*> &nodeList, char* in){
 void findShortestPath(vector<Node*> &nodeList, char* in){
     char firstNodeLabel[999];
     char secondNodeLabel[999];
-    char** starting;
     //Asks user for two labels
     cout << "Please enter the label for the source node." << endl;
     getInput(in);
@@ -383,11 +382,7 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
         while(true){
             //If the second node exists
             if(strcmp(curr->getLabel(), secondNodeLabel)==0){
-                //
                 //Otherwise, we can go onto dijstra's
-                if(firstNodeValid){
-                    dijkstraAlgorithm(nodeList, parent, distance, (*it)->getLabel());
-                }
                 secondNodeValid = true;
                 break;
             }
@@ -406,6 +401,8 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
         cout << "The second node \"" << secondNodeLabel << "\" was not found...therefore an edge was not added." << endl;
         return;
     }
+    dijkstraAlgorithm(nodeList, parent, distance, firstNodeLabel);
+    cout << "Hi" << endl;
     cout << distance[secondNodeLabel] << endl;
     //Case that there is no path
     if(distance[secondNodeLabel] != INFINITY){
@@ -491,7 +488,6 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
     //While queue not empty
     while(!queue.empty()){
         //Choose the minimum object in the queue
-        cout << "Choosing minimum object in the queue" << endl;
         vector<char*>::iterator queueIt;
         int leastDist = INFINITY;
         char* leastLabel = (char*)"";
@@ -500,7 +496,6 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
             cout << distance[(*queueIt)] << endl;
             //If distance is smaller
             if(distance[(*queueIt)] < leastDist){
-                cout << "ADKLJASLKDJSLKFJKLSDJFLKd" << endl;
                 //Check if it hasn't been visited
                 //if(!visited[(*queueIt)]){
                 //Then set it as the least, and update least dist
@@ -508,26 +503,29 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
                 leastLabel = (*queueIt);
             }
         }
-        cout << "Deleting label from queue" << endl;
         //DELETE LEAST LABEL FROM THE QUEUE DARN IT.
         for(queueIt = queue.begin(); queueIt != queue.end(); ++queueIt){
+            cout << "Still Scanningn" << endl;
             if(strcmp(leastLabel, (*queueIt)) == 0){
+                cout << "We're going to delete " << (*queueIt) <<". "<< endl;
+                cout << "JDSKLFJDSLKFJSDLKFJDSLKFJLk" << endl;
                 queueIt = queue.erase(queueIt);
                 break;
             }
         }
         cout << "leastLabel is:" << leastLabel << "." << endl;
-        return;
         //Mark node as visited. I don't know if this might throw an error
         visited[leastLabel] = true;
         //Add all nodes of this node to queue, to do this we have to traverse linked list (like what???? Why did I use linked lists at all??????????)
         for(nodeListIt = nodeList.begin(); nodeListIt != nodeList.end(); ++nodeListIt){
+            //Find the least label node
             if(strcmp((*nodeListIt)->getLabel(), leastLabel) == 0){
                 //Traverse list of neighbors
                 Node* temp = (*nodeListIt);
                 while(true){
+                    //If no neighbors / the end, leave
                     if(temp == NULL){
-                        return;
+                        break;
                     }
                     //Make sure that it isn't visited
                     if(!visited[temp->getLabel()]){
@@ -540,7 +538,6 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
                             //Update prev
                             parent[temp->getLabel()] = leastLabel;
                         }
-                        //Add to queue. Right?
                     }
                     //Move onto the next neighbor
                     temp = temp->getNext();
