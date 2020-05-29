@@ -1,39 +1,35 @@
 #+TITLE: Graph Creator Notes
 #+DESCRIPTION: 2:00 long PSU video what a scam
 
+* PLEASE READ
+- This project works compiled on GCC version 9.3.0 on Ubuntu
 * Graph Implementation
-** Required Methods (See Class)
-*** Add Edge
-*** Remove Edge
-*** Add Node
-*** Remove Node
-** Required Classes
-*** Edge(Node* src, Node* dest, int weight)
+** Node(Node* src, Node* dest, int weight)
 - Start Node
 - End Node
 - Value
-**** Add Node(Edge* src)
+*** Add Node(Edge* src)
 - I think this func needs to be in main
 - new Edge(src, NULL, NULL)
-**** Add Edge(Edge* from, Edge* to)
+*** Add Edge(Edge* from, Edge* to)
 - traverse linked list edge a
   - if edge->getDest() == to
     - break
   - if edge get next == null
     - add edge
-**** Remove Edge(Edge* from, Edge* to)
+*** Remove Edge(Edge* from, Edge* to)
 - traverse linked list edge src
   - if edge->getDest() == to
     - remove
   - if edge get next == null
     - return edge DNE
-**** Remove Node(Edge* src)
+*** Remove Node(Edge* src)
 - traverse linked list src, store
 - delete Edge in linked list src head
 - remove src from arrayEdge
 - traverse all stored edges
   - remove Edge* src
-*** Main
+** Main
 - Should Include an Array of Nodes
 - Need some way to traverse the entire array of nodes and print adjacency list
 * Dijkstra's Algorithm

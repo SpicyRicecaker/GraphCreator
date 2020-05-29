@@ -1,8 +1,17 @@
+/*
+  Author: Shengdong Li
+  Date: 3/28/2020
+  GraphCreator:
+  A program that can create vertices and edges between vertices,
+  remove vertices along with all edges connected to it,
+  remove edges between two vertices,
+  and finally, use dijkstra's algorithm to find the shortest path from one vertex to another.
+ */
 #include <iostream>
 #include <cstring>
 #include <vector>
 #include <iterator>
-#include <map>
+#include <map> //Maps are used mainly in Dijkstra's algorithm where we need to retrieve distance and previous node
 #include "Node.h"
 
 using namespace std;
@@ -10,7 +19,7 @@ using namespace std;
 #define INFINITY 2147483647
 
 //From https://stackoverflow.com/questions/4157687/using-char-as-a-key-in-stdmap User: GWW
-//Compares two char* by their string value instead of their pointer.
+//Compares two char* by their string value instead of their pointer. This code was modified to account for null values of char*
 struct cmp_str
 {
     bool operator()(const char* a, const char* b) const {
@@ -51,36 +60,20 @@ int main(){
     //Holds input
     char inArray[999];
     char* in = &inArray[0];
-    //Holds list of nodes
+    //Holds list of vertices
     vector<Node*> nodeList;
 
     //Running!
     bool running = true;
 
+    //Beginning prompt
     cout << "Welcome to Graph Creator. Enter \"help\" for a list of commands." << endl;
 
-
-    //DEBUG DEBUG DEBUG
-
-      nodeList.push_back(new Node(NULL, (char*)"A", -1));
-      nodeList.push_back(new Node(NULL, (char*)"B", -1));
-      nodeList.push_back(new Node(NULL, (char*)"C", -1));
-      nodeList.push_back(new Node(NULL, (char*)"D", -1));
-      nodeList.push_back(new Node(NULL, (char*)"E", -1));
-      nodeList.push_back(new Node(NULL, (char*)"F", -1));
-      nodeList.push_back(new Node(NULL, (char*)"G", -1));
-
-      addEdgeLite(nodeList, (char*)"A", (char*)"C", 5);
-      addEdgeLite(nodeList, (char*)"A", (char*)"B", 10);
-      addEdgeLite(nodeList, (char*)"C", (char*)"D", 50);
-      addEdgeLite(nodeList, (char*)"B", (char*)"D", 25);
-      addEdgeLite(nodeList, (char*)"D", (char*)"E", 100);
-      addEdgeLite(nodeList, (char*)"E", (char*)"F", 10);
-      addEdgeLite(nodeList, (char*)"E", (char*)"G", 200);
-    //DEBUG DEBUG DEBUG
+    //Main program loop, handles all functions
     while(running){
         //Get user input then chooses the appropriate function to call
         getInput(in);
+        //Upper case so user can mix cases
         int inLen = strlen(in);
         for(int a = 0; a < inLen; ++a){
             in[a] = toupper(in[a]);
@@ -125,6 +118,7 @@ int main(){
     return 0;
 }
 
+//Get input takes user input and stores it into char* in, with some minimal input checking
 void getInput(char* in){
     while(true){
         cin.getline(in,999);
@@ -149,6 +143,7 @@ void quit(bool &running){
 void addVertex(vector<Node*> &nodeList, char* in){
     cout << "Please enter the label for this new vertex" << endl;
     getInput(in);
+    //Edges are NULL, label is in, and weight is -1 (weight is never accessed tho)
     nodeList.push_back(new Node(NULL, in, -1));
     cout << "\"" << in << "\" was successfully entered into the graph!" << endl;
 }
@@ -157,10 +152,11 @@ void addVertex(vector<Node*> &nodeList, char* in){
 void graph(vector<Node*>& nodeList){
     //Create iterator
     vector<Node*>::iterator it;
-    //Iterate through vertices
+    //If iterator already is at the end, graph is empty
     if(it == nodeList.end()){
         cout << "The graph is empty!" << endl;
     }
+    //Iterate through vertices
     for(it = nodeList.begin(); it != nodeList.end(); it++){
         //Iterate through linked list
         //We have curr and past here just to make the syntax look a bit better (i.e. ", and x")
@@ -168,7 +164,7 @@ void graph(vector<Node*>& nodeList){
         if(curr == NULL){
             cout << "For node \"" << (*it)->getLabel() << "\", there are no adjacent nodes." << endl;
         }else{
-            //Print vertex
+            //Print each vertex by traversing linked list
             cout << "For node \"" << (*it)->getLabel() << "\", the adjacent nodes are: ";
             while(curr!=NULL){
                 cout << curr->getLabel() << " ";
@@ -191,11 +187,13 @@ void addEdge(vector<Node*> &nodeList, char* in){
     cout << "Please enter the label for the second node." << endl;
     getInput(in);
     strcpy(secondNodeLabel, in);
+    //Ask user for number as weight
     cout << "Please enter the weight of this edge." << endl;
     while(true){
         getInput(in);
         int inLen = strlen(in);
         bool alldig = true;
+        //Check to make sure that all digits are ints. No segfaults here!
         for(int a = 0; a < inLen; ++a){
             if(!isdigit(in[a])){
                 alldig = false;
@@ -208,20 +206,24 @@ void addEdge(vector<Node*> &nodeList, char* in){
         cout << "Please only enter numbers for the weight of the edge." << endl;
     }
     weight = atoi(in);
-    //Loop through the initial node list and makes sure that the first node does exist
+    //Loop through the initial node list and makes sure that the first node exists
     vector<Node*>::iterator it;
+    //This stores the spot at which the first node was found. First program to be doing this!
     vector<Node*>::iterator firstNodeSpot;
     bool firstFound = false;
     bool secondFound = false;
     for(it = nodeList.begin(); it != nodeList.end(); ++it){
         //If the first node was found
         if(strcmp((*it)->getLabel(),firstNodeLabel) == 0){
+            //Record spot and update
             firstFound = true;
             firstNodeSpot = it;
         }else if(strcmp((*it)->getLabel(),secondNodeLabel) == 0){
+            //Update
             secondFound = true;
         }
     }
+    //Different debug messages for each scenario
     if(firstFound == false){
         if(secondFound == false){
             cout << "The node first and second \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\" were not found...therefore an edge was not added." << endl;
@@ -231,7 +233,7 @@ void addEdge(vector<Node*> &nodeList, char* in){
     }else if(secondFound == false){
         cout << "The second node \"" << secondNodeLabel << "\" was not found... therefore and edge was not added." << endl;
     }else{
-        //Traverse the list and make sure that the second node DNE
+        //Traverse the list and make sure that the second node DNE, so that we don't add duplicate edges
         Node* curr = (*firstNodeSpot);
         while(true){
             //If the second node exists
@@ -267,12 +269,14 @@ void removeVertex(vector<Node*> &nodeList, char* in){
     for(it = nodeList.begin(); it!=nodeList.end(); ){
         //If the vertex was found
         if(strcmp((*it)->getLabel(), in) == 0){
-            //Iterate and delete the whole linked list, then delete the head from the vertex
-            //I hope that there aren't any issues with this because of references!
+            //I hope that there aren't any issues with this because of references! (There weren't, yay!)
+            //Iterate and delete the whole linked list
             removeList((*it));
+            //Then delete the head from the node list
             it = nodeList.erase(it);
             deletedNodes++;
         }else{
+            //We also need to delete all possible connections to this vertex, so we go through the linked list of any vertex (really inefficient but you have to do this with adjacency lists)
             int befLength = nodeLength((*it));
             //Otherwise, traverse the linked list and scan for equivalent connections, remove them
             removeNode(in, (*it));
@@ -280,6 +284,7 @@ void removeVertex(vector<Node*> &nodeList, char* in){
             ++it;
         }
     }
+    //If there were no deleted nodes, notify, otherwise present good news
     if(deletedNodes == 0){
         cout << "The vertex with the given label \"" << in << "\" was not found, so there were no changes to the graph." << endl;
     }else{
@@ -320,7 +325,7 @@ void removeNode(char* in, Node* &head){
             //Set current to its child
             //current = &tempChild;
         }else{
-            //RIP
+            //Move up
             past = current;
             Node* temp = (*current)->getNext();
             current = &temp;
@@ -358,6 +363,7 @@ void removeEdge(vector<Node*> &nodeList, char* in){
             removeNode(secondNodeLabel, (*it));
             if(befLength == nodeLength((*it))){
                 //If there weren't any deleted edges, notify
+                cout << "The second node \"" << secondNodeLabel << "\" was not found...therefore an edge was not deleted." << endl;
             }else{
                 //If there were deleted edges, notify
                 cout << "An edge was successfully deleted between \"" << firstNodeLabel << "\" and \"" << secondNodeLabel << "\"!" << endl;
@@ -368,7 +374,7 @@ void removeEdge(vector<Node*> &nodeList, char* in){
     cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not deleted." << endl;
 }
 
-//Uses dijkstra's to find shortest path
+//Uses dijkstra's to find shortest path - so many ways to implement, I chose priority queue
 void findShortestPath(vector<Node*> &nodeList, char* in){
     char firstNodeLabel[999];
     char secondNodeLabel[999];
@@ -379,11 +385,9 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
     cout << "Please enter the label for the destination node." << endl;
     getInput(in);
     strcpy(secondNodeLabel, in);
+    //Our maps need cmp_str because otherwise the map would look at the address of char* instead of the actual string value
     map<char*, char*, cmp_str> parent;
     map<char*, int, cmp_str> distance;
-    //Because maps pass in by pointer and not value, we need to make sure that the given node exists and set starting equal to it, killing two birds with one stone
-    //
-    //
     //Loop through the initial node list and makes sure that the first node does exist
     bool firstNodeValid = false;
     bool secondNodeValid = false;
@@ -391,6 +395,7 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
     for(it = nodeList.begin(); it != nodeList.end(); ++it){
         //If the first node was found
         if(strcmp((*it)->getLabel(),firstNodeLabel) == 0){
+            //Update bool!
             firstNodeValid = true;
         }
         //Traverse the list and make sure that the second node exists
@@ -398,7 +403,7 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
         while(true){
             //If the second node exists
             if(strcmp(curr->getLabel(), secondNodeLabel)==0){
-                //Otherwise, we can go onto dijstra's
+                //Update bool!
                 secondNodeValid = true;
                 break;
             }
@@ -409,40 +414,55 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
             }
         }
     }
+    //Output bad news if needed
     if(firstNodeValid == false){
         cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
         return;
-    }
-    if(secondNodeValid == false){
+    }else if(secondNodeValid == false){
         cout << "The second node \"" << secondNodeLabel << "\" was not found...therefore an edge was not added." << endl;
         return;
     }
+    //
+    //
+    //
+    // ----------We pass in our graph, starting node, then previous nodes of current node and distance to get to node!----------
+    //
     dijkstraAlgorithm(nodeList, parent, distance, firstNodeLabel);
-    //Case that there is no path
+    //
+    // ----------We should get back *parent*, the the node before a given node in a graph that eventually leads back to the shortest path if recursed enough, along with *distance*, the shortest possible distance that each node is away from the start.
+    //
+    //
+    //
+    //Make sure that there is a valid path
     if(distance[secondNodeLabel] != INFINITY){
         //Print shortest path
         cout << "The shortest path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\" is ";
+        //To get the shortest path, we start at our destination, then keep on calling distance[] while pushing it into the vector to get a path
         char* current = secondNodeLabel;
         vector<char*> path;
-        //Go backwards to trace path
         while(true){
+            //push into vector
             path.push_back(current);
+            //If we get back to the beginning, our path is done
             if(strcmp(current, firstNodeLabel) == 0){
                 break;
             }
+            //Reiterate
             current = parent[current];
         }
+        //We need a reverse vector to go from end to beginning, along with its syntax
         vector<char*>::reverse_iterator pathIt;
         for(pathIt = path.rbegin(); pathIt != path.rend(); ++pathIt){
             cout << (*pathIt) << " ";
         }
+        //The distance we already know, because that's the distance that a specific node is away from the starting node
         cout << "with a cost of " << distance[secondNodeLabel] << "!" << endl;
     }else{
         cout << "There is no path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\"." << endl;
     }
 }
 
-//Asks user for two labels, and a weight, verifies that the weight is a number, verifies that the first node DOES exist, then traverses the linked list for the first node, verifies that the second node DNE, then adds that, including a weight
+//A clone of add edge except without user input. Mostly for debugging purposes.
 void addEdgeLite(vector<Node*> &nodeList, char* firstNodeLabel, char* secondNodeLabel, int weight){
     //Loop through the initial node list and makes sure that the first node does exist
     vector<Node*>::iterator it;
@@ -473,82 +493,82 @@ void addEdgeLite(vector<Node*> &nodeList, char* firstNodeLabel, char* secondNode
     cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
 }
 
-//Returns a map of parent and distance by using dijkstra's algorithm to find the shortest length from a beginning node to all nodes
+//Returns a map of the parent and distance for all nodes by using dijkstra's algorithm to find the shortest length from a beginning node to all nodes. Uses (scuffed) priority queue for implementation!
 void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &parent, map<char*, int, cmp_str> &distance, char* starting){
-    //Define visited map, true = visited, false = unvisited
+    //Define visited map, true = visited, false = unvisited.
+    //We should be able to just plugin the label for a node and get if it has been visited or not.
     map<char*, bool, cmp_str> visited;
-    //This queue is so big brain. If we pick the min, it's always BFS.
+    //This queue is so big brain. If we pick the min from the queue, it's always BFS
     vector<char*> queue;
-    //Initialize default map values
+    //Initialize our maps with default values as specified in Dijkstra's Algorithm
     vector<Node*>::iterator nodeListIt;
     for(nodeListIt = nodeList.begin(); nodeListIt != nodeList.end(); ++nodeListIt){
         //First mark all nodes as unvisited
         visited[(*nodeListIt)->getLabel()] = false;
         //Then define distance to all other nodes as infinity
         distance[(*nodeListIt)->getLabel()] = INFINITY;
-        //Then define previous as null, as nothing has been visited yet
+        //Then define previous nodes for all nodes as null, as nothing has been visited yet; we don't have a previous
         parent[(*nodeListIt)->getLabel()] = NULL;
-        //Then add to queue
+        //Then add the node to queue.
+        //We add all vertices to the queue so that they will all be visited eventually.
         queue.push_back((*nodeListIt)->getLabel());
     }
-    //Set start initial node to current node, distance is 0
+    //Set starting node to current node by setting the distance to that node as 0.
+    //This makes sense, because if we want to find the path from "A" to "A" it is just 0
     distance[starting] = 0;
-    //
+    //The line below can be used for different implementations of Dijkstra's, like recursion
     //char* currentNode = starting;
     //
     //
+    //Ok I get it we learned heaps to find max/min very efficiently what's below is REALLY INEFFICIENT but idc ehehe
     //
     //
-    //Ok I get it we learned heaps to find max/min very efficiently what you see below is REALLY INEFFICIENT but idc
-    //
-    //
-    //
-    //
-    //While queue not empty
+    //While queue is not empty, this means that while we haven't visited every node yet
     while(!queue.empty()){
-        //Choose the minimum object in the queue
+        //Choose the node with the least distance from the starting node in the queue (this makes it BFS!)
+        //Implementation for finding the smallest number in this queue is really inefficient but we don't talk about that
         vector<char*>::iterator queueIt;
         int leastDist = INFINITY;
         char* leastLabel = (char*)"";
         for(queueIt = queue.begin(); queueIt != queue.end(); ++queueIt){
             //If distance is smaller
             if(distance[(*queueIt)] <= leastDist){
-                //Check if it hasn't been visited
-                //if(!visited[(*queueIt)]){
-                //Then set it as the least, and update least dist
+                //Set it as the least, and update least dist
                 leastDist = distance[(*queueIt)];
                 leastLabel = (*queueIt);
             }
         }
-        //DELETE LEAST LABEL FROM THE QUEUE DARN IT.
+        //Remove the node from the queue as we're about to visit it rn
         for(queueIt = queue.begin(); queueIt != queue.end(); ++queueIt){
+            //Simple iteration through vector and value matching deletion
             if(strcmp(leastLabel, (*queueIt)) == 0){
                 queueIt = queue.erase(queueIt);
                 break;
             }
         }
-        //Mark node as visited. I don't know if this might throw an error
+        //Mark node as visited also, so we don't add the neighbors of this node into the queue again
         visited[leastLabel] = true;
-        //Add all nodes of this node to queue, to do this we have to traverse linked list (like what???? Why did I use linked lists at all??????????)
+        //Add all unvisited neighboring nodes of this node to queue, to do this we have to traverse linked list (like what???? Why did I use linked lists at all??????????)
         for(nodeListIt = nodeList.begin(); nodeListIt != nodeList.end(); ++nodeListIt){
-            //Find the least label node
+            //Find the least label node's location in the nodeList
             if(strcmp((*nodeListIt)->getLabel(), leastLabel) == 0){
                 //Traverse list of neighbors
                 Node* temp = (*nodeListIt);
+                //For each neighbor
                 while(true){
-                    //If no neighbors / the end, leave
+                    //If we're at the end of the list of neighbors, leavee
                     if(temp == NULL){
                         break;
                     }
-                    //Make sure that it isn't visited
+                    //Make sure that the neighbor has not been visited!
                     if(!visited[temp->getLabel()]){
                         //Calculate the distance to node
                         int distToNode = distance[leastLabel] + temp->getWeight();
-                        //If distance to node is less than the current distance of the node
+                        //If distance to node is less than the current distance of the node (in other words, if this new path to the neighbor is less cost)
                         if(distToNode < distance[temp->getLabel()]){
-                            //Then update distance
+                            //Then update distance.
                             distance[temp->getLabel()] = distToNode;
-                            //Update prev
+                            //Update previous node, so we can trace back the most efficient path later!
                             parent[temp->getLabel()] = leastLabel;
                         }
                     }
@@ -558,7 +578,8 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
             }
         }
     }
-
+    //Below is a really early pseudocode for Dijkstra's
+    //
     //Add all list of unvisited neighbors to queue
     //Calculate the distance to the neighbor node by adding the distance of the current node to the weight of the edge that connects the current node to the neighboring node
     //Compare edge distance to current distance assigned to neighboring node.

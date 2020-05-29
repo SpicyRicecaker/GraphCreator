@@ -5,12 +5,14 @@
 //Constructor for edge
 Node::Node(Node* newNext, char* newLabel, int newWeight){
     next = newNext;
+    //We have to allocate space for label as we're initializing it in a function at times and not in main
     label = new char[strlen(newLabel)];
     strcpy(label, newLabel);
     weight = newWeight;
 }
 //Destructor for edge
 Node::~Node(){
+    //delete[] for [] objects, just delete for regular
     delete[] label;
 }
 //Getters and Setters for values
