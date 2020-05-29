@@ -396,8 +396,6 @@ void addEdgeLite(vector<Node*> &nodeList, char* firstNodeLabel, char* secondNode
 void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<char*, int> &distance, char* starting){
     //Define visited map, true = visited, false = unvisited
     map<char*, bool> visited;
-    //This queue is so big brain. If we pick the min, it's always BFS.
-    vector<char*> queue;
     //Initialize defaulit map values
     vector<Node*>::iterator nodeListIt;
     for(nodeListIt = nodeList.begin(); nodeListIt != nodeList.end(); ++nodeListIt){
@@ -407,15 +405,14 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<c
         distance[(*nodeListIt)->getLabel()] = 2147483647;
         //Then define previous as null, as nothing has been visited yet
         parent[(*nodeListIt)->getLabel()] = NULL;
-        //Then add to queue
-        queue.push_back((*nodeListIt)->getLabel());
     }
     //Set start initial node to current node, distance is 0
     distance[starting] = 0;
     //char* currentNode = starting;
 
     //Making a queue with vectors cause I'm too lazy hehe
-    //Push back every vertex
+    vector<char*> queue;
+    queue.push_back(starting);
     //While queue not empty
     while(!queue.empty()){
         //Choose the minimum object in the queue
@@ -455,7 +452,6 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<c
                             //Update prev
                             parent[temp->getLabel()] = leastLabel;
                         }
-                        //Add to queue. Right?
                     }
                     //Move onto the next neighbor
                     temp = temp->getNext();
