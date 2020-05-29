@@ -14,8 +14,8 @@ using namespace std;
 struct cmp_str
 {
     bool operator()(const char* a, const char* b) const {
-      return ((a != nullptr) && (b != nullptr) && (strcmp(a, b) < 0));
-   }};
+        return ((a != nullptr) && (b != nullptr) && (strcmp(a, b) < 0));
+    }};
 //Gets user input
 void getInput(char* in);
 //Prints list of commands
@@ -62,6 +62,7 @@ int main(){
 
     //DEBUG DEBUG DEBUG
 
+    /*
     nodeList.push_back(new Node(NULL, (char*)"A", -1));
     nodeList.push_back(new Node(NULL, (char*)"B", -1));
     nodeList.push_back(new Node(NULL, (char*)"C", -1));
@@ -77,6 +78,7 @@ int main(){
     addEdgeLite(nodeList, (char*)"D", (char*)"E", 100);
     addEdgeLite(nodeList, (char*)"E", (char*)"F", 10);
     addEdgeLite(nodeList, (char*)"E", (char*)"G", 200);
+    */
     //DEBUG DEBUG DEBUG
     while(running){
         //Get user input then chooses the appropriate function to call
@@ -500,7 +502,7 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
             cout << (*queueIt) << endl;
             cout << distance[(*queueIt)] << endl;
             //If distance is smaller
-            if(distance[(*queueIt)] < leastDist){
+            if(distance[(*queueIt)] <= leastDist){
                 //Check if it hasn't been visited
                 //if(!visited[(*queueIt)]){
                 //Then set it as the least, and update least dist
