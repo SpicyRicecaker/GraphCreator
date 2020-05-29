@@ -418,10 +418,8 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
         return;
     }
     dijkstraAlgorithm(nodeList, parent, distance, firstNodeLabel);
-    cout << distance[secondNodeLabel] << endl;
     //Case that there is no path
     if(distance[secondNodeLabel] != INFINITY){
-        cout << "No infinity" << endl;
         //Print shortest path
         cout << "The shortest path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\" is ";
         char* current = secondNodeLabel;
@@ -438,7 +436,7 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
         for(pathIt = path.rbegin(); pathIt != path.rend(); ++pathIt){
             cout << (*pathIt) << " ";
         }
-        cout << "with a weight of " << distance[secondNodeLabel] << "!" << endl;
+        cout << "with a cost of " << distance[secondNodeLabel] << "!" << endl;
     }else{
         cout << "There is no path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\"." << endl;
     }
@@ -513,8 +511,6 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
         int leastDist = INFINITY;
         char* leastLabel = (char*)"";
         for(queueIt = queue.begin(); queueIt != queue.end(); ++queueIt){
-            cout << (*queueIt) << endl;
-            cout << distance[(*queueIt)] << endl;
             //If distance is smaller
             if(distance[(*queueIt)] <= leastDist){
                 //Check if it hasn't been visited
@@ -526,15 +522,11 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*, cmp_str> &pare
         }
         //DELETE LEAST LABEL FROM THE QUEUE DARN IT.
         for(queueIt = queue.begin(); queueIt != queue.end(); ++queueIt){
-            cout << "Still Scanningn" << endl;
             if(strcmp(leastLabel, (*queueIt)) == 0){
-                cout << "We're going to delete " << (*queueIt) <<". "<< endl;
-                cout << "JDSKLFJDSLKFJSDLKFJDSLKFJLk" << endl;
                 queueIt = queue.erase(queueIt);
                 break;
             }
         }
-        cout << "leastLabel is:" << leastLabel << "." << endl;
         //Mark node as visited. I don't know if this might throw an error
         visited[leastLabel] = true;
         //Add all nodes of this node to queue, to do this we have to traverse linked list (like what???? Why did I use linked lists at all??????????)
