@@ -7,6 +7,7 @@
 
 using namespace std;
 
+#define INFINITY 2147483647
 //Gets user input
 void getInput(char* in);
 //Prints list of commands
@@ -359,6 +360,23 @@ void findShortestPath(vector<Node*> &nodeList, char* in){
     map<char*, char*> parent;
     map<char*, int> distance;
     dijkstraAlgorithm(nodeList, parent, distance, firstNodeLabel);
+    //Case that there is no path
+    if(distance[secondNodeLabel] != INFINITY){
+        //Print shortest path
+        cout << "The shortest path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\" is ";
+        char* current = secondNodeLabel;
+        //Go backwards to trace path
+        while(true){
+            cout << current << " ";
+            if(strcmp(secondNodeLabel, firstNodeLabel) == 0){
+                return;
+            }
+            current = parent[current];
+        }
+        cout << "with a weight of " << distance[secondNodeLabel] << "!" << endl;
+    }else{
+        cout << "There is no path from \"" << firstNodeLabel << "\" to \"" << secondNodeLabel << "\"." << endl;
+    }
 }
 
 //Asks user for two labels, and a weight, verifies that the weight is a number, verifies that the first node DOES exist, then traverses the linked list for the first node, verifies that the second node DNE, then adds that, including a weight
@@ -404,7 +422,7 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<c
         //First mark all nodes as unvisited
         visited[(*nodeListIt)->getLabel()] = false;
         //Then define distance to all other nodes as infinity
-        distance[(*nodeListIt)->getLabel()] = 2147483647;
+        distance[(*nodeListIt)->getLabel()] = INFINITY;
         //Then define previous as null, as nothing has been visited yet
         parent[(*nodeListIt)->getLabel()] = NULL;
         //Then add to queue
@@ -420,7 +438,7 @@ void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<c
     while(!queue.empty()){
         //Choose the minimum object in the queue
         vector<char*>::iterator queueIt;
-        int leastDist = 2147473647;
+        int leastDist = INFINITY;
         char* leastLabel = (char*)"";
         for(queueIt = queue.begin(); queueIt != queue.end(); ++queueIt){
             //If distance is smaller
