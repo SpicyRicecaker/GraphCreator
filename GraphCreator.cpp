@@ -2,14 +2,10 @@
 #include <cstring>
 #include <vector>
 #include <iterator>
+#include <map>
 #include "Node.h"
 
 using namespace std;
-
-struct pathAndLength{
-    vector<Node*> pathList;
-    int pathCost;
-};
 
 //Gets user input
 void getInput(char* in);
@@ -30,8 +26,10 @@ void removeVertex(vector<Node*> &nodeList, char* in);
 //Asks user to input two labels, removes edge
 void removeEdge(vector<Node*> &nodeList, char* in);
 //Uses Dijkstra's Algorithm to find a path between the first vertex and the last vertex. Return shortest path if it exists, or no paths
-pathAndLength findShortestPath(vector<Node*> &nodeList, char* in);
+//Graph, Distance, Prev, Visited, Starting node
+void findShortestPath(vector<Node*> &nodeList, char* in);
 //Prints out the adjacency list
+void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<char*, int> &distance, char* starting);
 void graph(vector<Node*> &nodeList);
 //Delete LinkedList - This really should be in the node class but I'm too lazy to move it over
 void removeList(Node* &head);
@@ -347,7 +345,7 @@ void removeEdge(vector<Node*> &nodeList, char* in){
 }
 
 //Uses dijkstra's to find shortest path
-pathAndLength findShortestPath(vector<Node*> &nodeList, char* in){
+void findShortestPath(vector<Node*> &nodeList, char* in){
     char firstNodeLabel[999];
     char secondNodeLabel[999];
     //Asks user for two labels
@@ -357,8 +355,10 @@ pathAndLength findShortestPath(vector<Node*> &nodeList, char* in){
     cout << "Please enter the label for the destination node." << endl;
     getInput(in);
     strcpy(secondNodeLabel, in);
-    pathAndLength b;
-    return b;
+    //map<char*, bool*> visited;
+    map<char*, char*> parent;
+    map<char*, int> distance;
+    dijkstraAlgorithm(nodeList, parent, distance, firstNodeLabel);
 }
 
 //Asks user for two labels, and a weight, verifies that the weight is a number, verifies that the first node DOES exist, then traverses the linked list for the first node, verifies that the second node DNE, then adds that, including a weight
@@ -390,4 +390,18 @@ void addEdgeLite(vector<Node*> &nodeList, char* firstNodeLabel, char* secondNode
         }
     }
     cout << "The first node \"" << firstNodeLabel << "\" was not found...therefore an edge was not added." << endl;
+}
+
+//Returns a map of parent and distance by using dijkstra's algorithm to find the shortest length from a beginning node to all nodes
+void dijkstraAlgorithm(vector<Node*> &nodeList, map<char*, char*> &parent, map<char*, int> &distance, char* starting){
+    //First mark all nodes as unvisited
+    //Then define distance to all other nodes as infinity, and previous as null
+    //Set start initial node to current node
+    //Add all list of unvisited neighbors to queu
+    //Calculate the distance to the neighbor node by adding the distance of the current node to the weight of the edge that connects the current node to the neighboring node
+    //Compare edge distance to current distance assigned to neighboring node.
+    //If edge weight is smaller than the weight of neighboring node, set it as new weight, otherwise keep previous weight
+    //Mark current node as visited
+    //Select unvisited node with smallest distance
+    //Set it as new current node, return to step 4
 }
