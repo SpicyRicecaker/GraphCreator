@@ -320,6 +320,8 @@ void removeNode(char* in, Node* &head){
             (*current)->setNext(NULL);
             //Remove current
             delete (*current);
+            //Set current to NULL
+            (*current) = NULL;
             //Set past child to current's child
             (*past)->setNext(tempChild);
             //Set current to its child

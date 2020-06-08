@@ -14,6 +14,7 @@ Node::Node(Node* newNext, char* newLabel, int newWeight){
 Node::~Node(){
     //delete[] for [] objects, just delete for regular
     delete[] label;
+    label = NULL;
 }
 //Getters and Setters for values
 Node* Node::getNext(){
